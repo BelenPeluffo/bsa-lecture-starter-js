@@ -20,12 +20,16 @@
 }
 
 .fighter-preview__name {
+  background-color: #ffdfa7;
+  font-family: 'Arial Black';
   width: 100%;
   max-height: fit-content;
   font-size: 22px;
   font-weight: 900;
   display: flex;
   justify-content: center;
+  border: 5px solid #ca9650;
+  box-sizing: border-box;
 }
 
 .fighter-preview__stat-container {
@@ -37,11 +41,25 @@
 }
 
 .fighter-preview__stat-item-container {
+  background-color: #ffdfa7;
   display: flex;
   flex-direction: column;
   column-gap: 10px;
   width: 100%;
   justify-content: center;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.fighter-preview__stat-item-container div {
+  font-family: 'Arial Black';
+  font-size: larger;
+}
+
+.fighter-preview__stat-item-container div:first-child {
+  font-family: 'Arial';
+  font-weight: 400;
+  font-size: small;
 }
 
 .fighter-preview__img-container {
