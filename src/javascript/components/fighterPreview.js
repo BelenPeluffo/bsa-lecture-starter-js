@@ -24,10 +24,45 @@ export function createFighterPreview(fighter, position) {
     });
 
     // todo: show fighter info (image, name, health, etc.)
-    const imageElement = fighter && createFighterImage(fighter);
-    // console.log('fighter?', fighter);
-    fighterElement.append(imageElement);
-    // console.log('fighterElement?', fighterElement);
+    if (fighter) {
+        const imageContainer = createElement({
+            tagName: 'div',
+            className: 'fighter-preview__img-container'
+        });
+        const imageElement = createFighterImage(fighter);
+        imageContainer.appendChild(imageElement);
+        const { name, ...stats } = fighter;
+        const nameContainer = createElement({
+            tagName: 'div',
+            className: `fighter-preview__name`
+        });
+        const statsContainer = createElement({
+            tagName: 'div',
+            className: `fighter-preview__stat-container`
+        });
+        const nameElement = createElement({ tagName: 'div' });
+        nameElement.append(name);
+        Object.keys(stats).forEach(stat => {
+            if (stat !== '_id' && stat !== 'source') {
+                const statContainer = createElement({
+                    tagName: 'div',
+                    className: 'fighter-preview__stat-item-container'
+                });
+                [stat, stats[stat]].forEach(element => {
+                    const statElement = createElement({
+                        tagName: 'div'
+                    });
+                    statElement.append(element);
+                    statContainer.appendChild(statElement);
+                });
+                statsContainer.appendChild(statContainer);
+            }
+        });
+        nameContainer.appendChild(nameElement);
+        // console.log('fighter?', fighter);
+        fighterElement.append(imageContainer, nameContainer, statsContainer);
+        // console.log('fighterElement?', fighterElement);
+    }
 
     return fighterElement;
 }
