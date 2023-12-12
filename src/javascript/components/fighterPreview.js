@@ -59,9 +59,7 @@ export function createFighterPreview(fighter, position) {
             }
         });
         nameContainer.appendChild(nameElement);
-        // console.log('fighter?', fighter);
         fighterElement.append(imageContainer, nameContainer, statsContainer);
-        // console.log('fighterElement?', fighterElement);
     }
 
     return fighterElement;
