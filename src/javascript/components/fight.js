@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 /* eslint-disable no-use-before-define */
 import controls from '../../constants/controls';
@@ -9,8 +10,8 @@ Object.keys(controls).forEach(key => {
 // console.log('pressedControls?', pressedControls);
 
 export async function fight(firstFighter, secondFighter) {
-    const playerOneHealth = firstFighter.health;
-    const playerTwoHealth = secondFighter.health;
+    let playerOneHealth = firstFighter.health;
+    let playerTwoHealth = secondFighter.health;
     return new Promise(resolve => {
         // resolve the promise with the winner when fight is over
         if (playerTwoHealth >= 1 && playerOneHealth >= 1) {
@@ -19,7 +20,7 @@ export async function fight(firstFighter, secondFighter) {
                 pressedControls[control] = true;
                 const isPlayerOne = /One/.test(control);
                 const isDefender = /Block/.test(control);
-                console.log('pressedControls?', pressedControls);
+                // console.log('pressedControls?', pressedControls);
                 let damage = 0;
                 if (!isDefender) {
                     damage = getDamage.apply(
@@ -27,8 +28,11 @@ export async function fight(firstFighter, secondFighter) {
                         isPlayerOne ? [firstFighter, secondFighter] : [secondFighter, firstFighter]
                     );
                     console.log('damage?', damage);
-                    // playerTwoHealth -= damage > 0 ? damage : 0;
+                    playerTwoHealth -= isPlayerOne ? damage : 0;
+                    playerOneHealth -= !isPlayerOne ? damage : 0;
                     damage = 0;
+                    console.log('playerTwoHealth?', playerTwoHealth);
+                    console.log('playerOneHealth?', playerOneHealth);
                 }
             });
             document.addEventListener('keyup', event => {
@@ -48,7 +52,7 @@ export function getHitPower(fighter) {
     // return hit power
     const critialHitChance = Math.floor(Math.random() * 2) + 1;
     const hitPower = fighter.attack * critialHitChance;
-    // const criticalStrike = fighter.attack * 2;
+    const criticalStrike = fighter.attack * 2;
     // console.log('hitPower?', hitPower);
     return hitPower;
 }
@@ -64,5 +68,9 @@ export function getBlockPower(fighter) {
 export function getDamage(attacker, defender) {
     // return damage
     // console.log(getHitPower(attacker) - getBlockPower(defender));
-    return getHitPower(attacker) - getBlockPower(defender);
+    const { PlayerOneBlock, PlayerTwoBlock } = pressedControls;
+    const isBlocking = PlayerOneBlock || PlayerTwoBlock;
+    // const damage = isBlocking ? getHitPower(attacker) - getBlockPower(defender) : getHitPower(attacker);
+    const damage = getHitPower(attacker) - (isBlocking ? getBlockPower(defender) : 0);
+    return damage > 0 ? damage : 0;
 }
