@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-use-before-define */
 import controls from '../../constants/controls';
-import { createReferenceObject } from '../helpers/fightHelper';
+import { createReferenceObject, setControlState } from '../helpers/fightHelper';
 
 const pressedControls = createReferenceObject(Object.keys(controls));
 const criticalCombinations = createReferenceObject([
@@ -19,20 +19,29 @@ export async function fight(firstFighter, secondFighter) {
         // resolve the promise with the winner when fight is over
         if (playerTwoHealth >= 1 && playerOneHealth >= 1) {
             document.addEventListener('keydown', event => {
-                const isCriticalCombo = Object.keys(criticalCombinations).find(key => key === event.code);
                 const control = Object.keys(controls).find(key => controls[key] === event.code);
-                pressedControls[control] = !isCriticalCombo && control;
-                criticalCombinations[isCriticalCombo] = !!isCriticalCombo;
+                setControlState(controls, true, pressedControls, 'key', event.code);
+                setControlState(criticalCombinations, true, null, 'value', event.code);
                 const isPlayerOne = /One/.test(control);
                 const isDefender = /Block/.test(control);
-                const playerOneCriticalHit = controls.PlayerOneCriticalHitCombination.every(
-                    combo => criticalCombinations[combo] === true
+                // const playerOneCriticalHit = controls.PlayerOneCriticalHitCombination.every(
+                //     combo => criticalCombinations[combo] === true
+                // );
+                // const playerTwoCriticalHit = controls.PlayerTwoCriticalHitCombination.every(
+                //     combo => criticalCombinations[combo] === true
+                // );
+                // PlayerOneCriticalHitCombination = playerOneCriticalHit;
+                PlayerOneCriticalHitCombination = setControlState(
+                    controls.PlayerOneCriticalHitCombination,
+                    true,
+                    criticalCombinations
                 );
-                const playerTwoCriticalHit = controls.PlayerTwoCriticalHitCombination.every(
-                    combo => criticalCombinations[combo] === true
+                // PlayerTwoCriticalHitCombination = playerTwoCriticalHit;
+                PlayerTwoCriticalHitCombination = setControlState(
+                    controls.PlayerTwoCriticalHitCombination,
+                    true,
+                    criticalCombinations
                 );
-                PlayerOneCriticalHitCombination = playerOneCriticalHit;
-                PlayerTwoCriticalHitCombination = playerTwoCriticalHit;
                 let damage = 0;
                 if (!isDefender && (control || PlayerOneCriticalHitCombination || PlayerTwoCriticalHitCombination)) {
                     damage = getDamage.apply(
@@ -48,10 +57,18 @@ export async function fight(firstFighter, secondFighter) {
                 }
             });
             document.addEventListener('keyup', event => {
-                const control = Object.keys(controls).find(key => controls[key] === event.code);
-                const isCriticalCombo = Object.keys(criticalCombinations).find(key => key === event.code);
-                pressedControls[control] = false;
-                criticalCombinations[isCriticalCombo] = false;
+                setControlState(controls, false, pressedControls, 'key', event.code);
+                setControlState(criticalCombinations, false, null, 'value', event.code);
+                PlayerOneCriticalHitCombination = setControlState(
+                    controls.PlayerOneCriticalHitCombination,
+                    false,
+                    criticalCombinations
+                );
+                PlayerTwoCriticalHitCombination = setControlState(
+                    controls.PlayerTwoCriticalHitCombination,
+                    false,
+                    criticalCombinations
+                );
             });
         } else {
             // Cuando la promesa se resuelva, devolverá el objeto del fighter ganador:
