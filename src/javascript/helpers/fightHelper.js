@@ -21,7 +21,7 @@ export function createReferenceObject(array) {
 export function setControlState(reference, state, target, searchCriteria, searchValue) {
     // console.log('searchValue?', searchValue);
     console.log('-----------------------------');
-    console.log(`Array.isArray(${reference})?`, Array.isArray(reference));
+    // console.log(`Array.isArray(${reference})?`, Array.isArray(reference));
     console.log('reference?', reference);
     // console.log('target?', target);
     // console.log('searchCriteria?', searchCriteria);
@@ -40,9 +40,21 @@ export function setControlState(reference, state, target, searchCriteria, search
         reference[property] = state;
         console.log(`reference[${property}]`, reference[property]);
     } else {
-        // console.log('target?', target);
-        // console.log('property?', property);
+        console.log('target?', target);
+        console.log('property?', property);
         target[property] = state;
     }
     return true;
+}
+
+/**
+ * Calculate width of health bar based on damage.
+ * @param {*} position
+ * @param {*} fullHealth
+ * @param {*} currentHealth
+ */
+export function updateHealthBar(position, fullHealth, currentHealth) {
+    const healthBar = document.getElementById(`${position}-fighter-indicator`);
+    const updatedHealth = (currentHealth * 100) / fullHealth;
+    healthBar.style.width = `${updatedHealth}%`;
 }

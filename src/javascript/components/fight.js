@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-use-before-define */
 import controls from '../../constants/controls';
-import { createReferenceObject, setControlState } from '../helpers/fightHelper';
+import { createReferenceObject, setControlState, updateHealthBar } from '../helpers/fightHelper';
 
 const pressedControls = createReferenceObject(Object.keys(controls));
 const criticalCombinations = createReferenceObject([
@@ -62,8 +62,13 @@ export async function fight(firstFighter, secondFighter) {
                     // console.log('PlayerOneCriticalHitCombination?', PlayerOneCriticalHitCombination);
                     // console.log('PlayerTwoCriticalHitCombination?', PlayerTwoCriticalHitCombination);
                     console.log('damage?', damage);
-                    playerTwoHealth -= isPlayerOne ? damage : 0;
-                    playerOneHealth -= !isPlayerOne || PlayerTwoCriticalHitCombination ? damage : 0;
+                    if (isPlayerOne) {
+                        playerTwoHealth -= isPlayerOne ? damage : 0;
+                        updateHealthBar('right', secondFighter.health, playerTwoHealth);
+                    } else {
+                        playerOneHealth -= !isPlayerOne || PlayerTwoCriticalHitCombination ? damage : 0;
+                        updateHealthBar('left', firstFighter.health, playerOneHealth);
+                    }
                     damage = 0;
                     console.log('playerTwoHealth?', playerTwoHealth);
                     console.log('playerOneHealth?', playerOneHealth);
@@ -104,6 +109,8 @@ export function getHitPower(fighter) {
 export function getBlockPower(fighter) {
     // return block power
     const { PlayerOneCriticalHitCombination, PlayerTwoCriticalHitCombination } = pressedControls;
+    console.log('PlayerOneCriticalHitCombination?', PlayerOneCriticalHitCombination);
+    console.log('PlayerTwoCriticalHitCombination?', PlayerTwoCriticalHitCombination);
     const dodgeChance = Math.floor(Math.random() * 2) + 1;
     const power = fighter.defense * dodgeChance;
     console.log('blockPower?', PlayerOneCriticalHitCombination || PlayerTwoCriticalHitCombination ? 0 : power);
