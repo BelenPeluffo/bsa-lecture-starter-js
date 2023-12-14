@@ -6,6 +6,6 @@ export default function showWinnerModal(fighter) {
     const nameElement = createElement({
         tagName: 'div'
     });
-    nameElement.add(fighter.name);
+    nameElement.append(fighter.name);
     showModal({ title: 'Winner', bodyElement: nameElement });
 }
