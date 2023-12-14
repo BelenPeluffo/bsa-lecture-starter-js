@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 /* eslint-disable no-use-before-define */
@@ -26,56 +27,70 @@ export async function fight(firstFighter, secondFighter) {
             const isRegularControl = Object.keys(controls).find(key => controls[key] === event.code);
             const isComboControl = Object.keys(criticalCombinations).includes(event.code);
             // console.log('isComboControl?', isComboControl);
-
-            if (isRegularControl) setControlState(controls, true, pressedControls, 'key', event.code);
-            else if (!isRegularControl) {
-                setControlState(criticalCombinations, true, null, 'value', event.code);
-                // console.log('isComboControl!');
-                PlayerOneCriticalHitCombination = setControlState(
-                    controls.PlayerOneCriticalHitCombination,
-                    true,
-                    criticalCombinations
-                );
-                PlayerTwoCriticalHitCombination = setControlState(
-                    controls.PlayerTwoCriticalHitCombination,
-                    true,
-                    criticalCombinations
-                );
-            }
-
-            const isPlayerOne = /One/.test(isRegularControl) || PlayerOneCriticalHitCombination;
-            const isDefender = /Block/.test(isRegularControl);
-            // console.log('criticalCombinations?', criticalCombinations);
-            let damage = 0;
-            if (
-                !isDefender &&
-                (isRegularControl || PlayerOneCriticalHitCombination || PlayerTwoCriticalHitCombination)
-            ) {
-                damage = getDamage.apply(
-                    this,
-                    isPlayerOne ? [firstFighter, secondFighter] : [secondFighter, firstFighter]
-                );
-                // console.log('isPlayerOne?', isPlayerOne);
-                // console.log('PlayerOneCriticalHitCombination?', PlayerOneCriticalHitCombination);
-                // console.log('PlayerTwoCriticalHitCombination?', PlayerTwoCriticalHitCombination);
-                console.log('damage?', damage);
-                if (isPlayerOne) {
-                    playerTwoHealth -= isPlayerOne ? damage : 0;
-                    updateHealthBar('right', secondFighter.health, playerTwoHealth);
-                } else {
-                    playerOneHealth -= !isPlayerOne || PlayerTwoCriticalHitCombination ? damage : 0;
-                    updateHealthBar('left', firstFighter.health, playerOneHealth);
+            if (isRegularControl || isComboControl) {
+                let secondsCounter = 0;
+                if (isRegularControl) setControlState(controls, true, pressedControls, 'key', event.code);
+                else if (!isRegularControl && isComboControl) {
+                    console.log('secondsCounter?', secondsCounter);
+                    setControlState(criticalCombinations, true, null, 'value', event.code);
+                    if (secondsCounter === 0) {
+                        // console.log('isComboControl!');
+                        PlayerOneCriticalHitCombination = setControlState(
+                            controls.PlayerOneCriticalHitCombination,
+                            true,
+                            criticalCombinations
+                        );
+                        PlayerTwoCriticalHitCombination = setControlState(
+                            controls.PlayerTwoCriticalHitCombination,
+                            true,
+                            criticalCombinations
+                        );
+                        if (PlayerOneCriticalHitCombination || PlayerTwoCriticalHitCombination) {
+                            console.log('Intervalo!');
+                            secondsCounter += 1;
+                            setInterval(() => {
+                                secondsCounter += 1;
+                            }, 1000);
+                        } else if (secondsCounter > 10) {
+                            secondsCounter = 0;
+                        }
+                    }
                 }
-                damage = 0;
-                if (playerTwoHealth < 1 || playerOneHealth < 1) {
-                    // Resolve the promise with the winner when the fight is over
-                    console.log('Game over');
-                    document.removeEventListener('keydown', keyDownListener);
-                    document.removeEventListener('keyup', keyUpListener);
-                    resolve(playerOneHealth > 0 ? firstFighter : secondFighter);
+
+                const isPlayerOne = /One/.test(isRegularControl) || PlayerOneCriticalHitCombination;
+                const isDefender = /Block/.test(isRegularControl);
+                // console.log('criticalCombinations?', criticalCombinations);
+                let damage = 0;
+                if (
+                    !isDefender &&
+                    (isRegularControl || PlayerOneCriticalHitCombination || PlayerTwoCriticalHitCombination)
+                ) {
+                    damage = getDamage.apply(
+                        this,
+                        isPlayerOne ? [firstFighter, secondFighter] : [secondFighter, firstFighter]
+                    );
+                    // console.log('isPlayerOne?', isPlayerOne);
+                    // console.log('PlayerOneCriticalHitCombination?', PlayerOneCriticalHitCombination);
+                    // console.log('PlayerTwoCriticalHitCombination?', PlayerTwoCriticalHitCombination);
+                    console.log('damage?', damage);
+                    if (isPlayerOne) {
+                        playerTwoHealth -= isPlayerOne ? damage : 0;
+                        updateHealthBar('right', secondFighter.health, playerTwoHealth);
+                    } else {
+                        playerOneHealth -= !isPlayerOne || PlayerTwoCriticalHitCombination ? damage : 0;
+                        updateHealthBar('left', firstFighter.health, playerOneHealth);
+                    }
+                    damage = 0;
+                    if (playerTwoHealth < 1 || playerOneHealth < 1) {
+                        // Resolve the promise with the winner when the fight is over
+                        console.log('Game over');
+                        document.removeEventListener('keydown', keyDownListener);
+                        document.removeEventListener('keyup', keyUpListener);
+                        resolve(playerOneHealth > 0 ? firstFighter : secondFighter);
+                    }
+                    console.log('playerTwoHealth?', playerTwoHealth);
+                    console.log('playerOneHealth?', playerOneHealth);
                 }
-                console.log('playerTwoHealth?', playerTwoHealth);
-                console.log('playerOneHealth?', playerOneHealth);
             }
         };
 
@@ -95,7 +110,6 @@ export async function fight(firstFighter, secondFighter) {
             // );
         };
 
-        console.log('resolve?', resolve);
         document.addEventListener('keydown', keyDownListener);
         document.addEventListener('keyup', keyUpListener);
     });
