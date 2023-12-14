@@ -28,10 +28,12 @@ export async function fight(firstFighter, secondFighter) {
                 // console.log('pressedControls?', pressedControls);
                 const isRegularControl = Object.keys(controls).find(key => controls[key] === event.code);
                 const isComboControl = Object.keys(criticalCombinations).includes(event.code);
+                console.log('isComboControl?', isComboControl);
 
                 if (isRegularControl) setControlState(controls, true, pressedControls, 'key', event.code);
-                else if (!isRegularControl) setControlState(criticalCombinations, true, null, 'value', event.code);
-                else if (isComboControl) {
+                else if (!isRegularControl) {
+                    setControlState(criticalCombinations, true, null, 'value', event.code);
+                    console.log('isComboControl!');
                     PlayerOneCriticalHitCombination = setControlState(
                         controls.PlayerOneCriticalHitCombination,
                         true,
@@ -68,7 +70,7 @@ export async function fight(firstFighter, secondFighter) {
                 }
             });
             document.addEventListener('keyup', event => {
-                // console.log('============KEY-UP==============');
+                console.log('============KEY-UP==============');
                 setControlState(controls, false, pressedControls, 'key', event.code);
                 setControlState(criticalCombinations, false, null, 'value', event.code);
                 // PlayerOneCriticalHitCombination = setControlState(

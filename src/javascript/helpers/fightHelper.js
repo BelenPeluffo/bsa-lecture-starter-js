@@ -21,12 +21,16 @@ export function createReferenceObject(array) {
 export function setControlState(reference, state, target, searchCriteria, searchValue) {
     // console.log('searchValue?', searchValue);
     console.log('-----------------------------');
-    // console.log(`Array.isArray(${reference})?`, Array.isArray(reference));
-    // console.log('reference?', reference);
+    console.log(`Array.isArray(${reference})?`, Array.isArray(reference));
+    console.log('reference?', reference);
     // console.log('target?', target);
     // console.log('searchCriteria?', searchCriteria);
     if (Array.isArray(reference)) {
-        // console.log('Entra por aquí?');
+        console.log('Entra por aquí?');
+        console.log(
+            'reference.every(item => target[item] === state)?',
+            reference.every(item => target[item] === state)
+        );
         return reference.every(item => target[item] === state);
     }
     const property = Object.keys(reference).find(item =>
@@ -34,6 +38,7 @@ export function setControlState(reference, state, target, searchCriteria, search
     );
     if (!target) {
         reference[property] = state;
+        console.log(`reference[${property}]`, reference[property]);
     } else {
         // console.log('target?', target);
         // console.log('property?', property);
