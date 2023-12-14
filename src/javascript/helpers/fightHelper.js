@@ -19,12 +19,18 @@ export function createReferenceObject(array) {
  * @param {*} searchValue Self explanatory.
  */
 export function setControlState(reference, state, target, searchCriteria, searchValue) {
+    // console.log('searchValue?', searchValue);
+    console.log('-----------------------------');
     // console.log(`Array.isArray(${reference})?`, Array.isArray(reference));
+    // console.log('reference?', reference);
+    // console.log('target?', target);
+    // console.log('searchCriteria?', searchCriteria);
     if (Array.isArray(reference)) {
+        // console.log('Entra por aquí?');
         return reference.every(item => target[item] === state);
     }
     const property = Object.keys(reference).find(item =>
-        searchCriteria === 'key' ? reference[item] : item === searchValue
+        searchCriteria === 'key' ? reference[item] === searchValue : item === searchValue
     );
     if (!target) {
         reference[property] = state;
